@@ -1,0 +1,4 @@
+-changed file structure
+-Used AI to write comments on most files and improve code clarity.
+-added functionality to save calculated path to DB
+-split script.js into autocomplete.js, savePathToDB.js, and map.js
