@@ -169,7 +169,16 @@ label {
 }
 
 #save-path-btn:hover {
-    background-color: #45a049;
+    background-color: #206923;
+}
+
+#tracking-code {
+    font-weight: bold;
+    color: #333;
+    margin-top: 10px;
+    position: absolute;
+    bottom: 20px;
+    padding-left: 100px;
 }
 
 /* ==========================================================================

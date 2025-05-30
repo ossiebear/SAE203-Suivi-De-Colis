@@ -30,7 +30,7 @@ if (isset($_POST['pathData'])) {
 }
 
 // Generate a unique tracking code as a 12-character hexadecimal string (6 random bytes).
-$trackingCode = bin2hex(random_bytes(6));
+$trackingCode = strtoupper(bin2hex(random_bytes(6)));
 
 try {
     // Establish a database connection using the included function.
@@ -59,12 +59,8 @@ try {
 
     // Check if the insertion affected any rows (i.e., was successful).
     if ($query->rowCount() > 0) {
-        // Return a success response including the generated tracking code and original path data.
-        echo json_encode([
-            'success' => true,
-            'trackingCode' => $trackingCode,
-            'pathData' => $pathData
-        ]);
+        // Return a success response with only the generated tracking code.
+        echo json_encode($trackingCode);
     } else {
         // Return an error if the insertion failed without an exception.
         echo json_encode(['error' => 'Failed to save tracking code to the database']);
@@ -73,4 +69,3 @@ try {
     // Catch any exceptions (e.g., DB errors) and return the error message as JSON.
     echo json_encode(['error' => $e->getMessage()]);
 }
-?>

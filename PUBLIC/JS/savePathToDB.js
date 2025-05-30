@@ -28,29 +28,52 @@ document.getElementById('save-path-btn').addEventListener('click', () => {
         return;
     }
 
-    // Fetch the journey path from the server by calling CreatePath.php with start and finish IDs.
-    fetch(`../../SRC/CreatePath.php?start=${encodeURIComponent(start[0])}&finish=${encodeURIComponent(destination[0])}`)
-        .then(response => response.json()) // Parse the response as JSON.
-        .then(data => {
-            // Extract the journey node IDs from the response and send them to savePathToDB.php via POST.
-            return fetch('../../SRC/savePathToDB.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                // Encode the journey node IDs as a JSON string and send as 'pathData' parameter.
-                body: `pathData=${encodeURIComponent(JSON.stringify(data.journey.map(item => item[0])))}`
-            });
-        })
-        .then(res => res.text()) // Read the response text from the savePathToDB.php call.
-        .then(result => {
-            // Log success message; optionally, provide user feedback here.
-            console.log('Path saved successfully!');
-        })
-        .catch(err => {
-            // Log any errors encountered during the fetch calls.
-            console.error('Error: ' + err.message);
-            // Optionally, provide user feedback for the error here.
+    // Fetch the journey path from the server by calling CreatePath.php via POST with start and finish IDs.
+    fetch('../../SRC/CreatePath.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        // Send start and finish IDs as URL-encoded form data.
+        body: `start=${encodeURIComponent(start[0])}&finish=${encodeURIComponent(destination[0])}`
+    })
+    .then(response => response.json()) // Parse the response as JSON.
+    .then(data => {
+        // Extract the journey node IDs from the response and send them to savePathToDB.php via POST.
+        return fetch('../../SRC/savePathToDB.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            // Encode the journey node IDs as a JSON string and send as 'pathData' parameter.
+            body: `pathData=${encodeURIComponent(JSON.stringify(data.journey.map(item => item[0])))}`
         });
+    })
+    .then(response => response.json()) // Read the response json from the savePathToDB.php call.
+    .then(response => {
+        console.log('Path saved to database successfully (assumed)');
+        console.log('Response data:', response);
+
+        // Get the parent container where to add the tracking code element
+        const pathArea = document.getElementById('path-area');
+
+        // Check if tracking code element already exists
+        let trackingCodeElement = document.getElementById('tracking-code');
+
+        if (trackingCodeElement) {
+            // If it exists, update the content
+            trackingCodeElement.innerText = "Tracking code: " + response;
+        } else {
+            // If it doesn't exist, create a new <p> element with id 'tracking-code'
+            trackingCodeElement = document.createElement('p');
+            trackingCodeElement.id = 'tracking-code';
+            trackingCodeElement.innerText = "Tracking code: " + response;
+            pathArea.appendChild(trackingCodeElement);
+        }
+    })
+    .catch(err => {
+        // Log any errors encountered during the fetch calls.
+        console.error('Error: ' + err.message);
+        // Optionally, provide user feedback for the error here.
+    });
 });
-//-----------------------------------------------------------------------------------
